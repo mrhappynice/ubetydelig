@@ -1,0 +1,302 @@
+groq
+request:
+curl https://api.groq.com/openai/v1/chat/completions -s \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer $GROQ_API_KEY" \
+-d '{
+"model": "llama3-8b-8192",
+"messages": [{
+    "role": "user",
+    "content": "Explain the importance of fast language models"
+}]
+}'
+
+response:
+{
+  "id": "chatcmpl-f51b2cd2-bef7-417e-964e-a08f0b513c22",
+  "object": "chat.completion",
+  "created": 1730241104,
+  "model": "llama3-8b-8192",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Fast language models have gained significant attention in recent years due to their ability to process and generate human-like text quickly and efficiently. The importance of fast language models can be understood from their potential applications and benefits:\n\n1. **Real-t................"
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "queue_time": 0.037493756,
+    "prompt_tokens": 18,
+    "prompt_time": 0.000680594,
+    "completion_tokens": 556,
+    "completion_time": 0.463333333,
+    "total_tokens": 574,
+    "total_time": 0.464013927
+  },
+  "system_fingerprint": "fp_179b0f92c9",
+  "x_groq": { "id": "req_01jbd6g2qdfw2adyrt2az8hz4w" }
+}
+
+
+## end groq
+============================================================================
+
+google
+request:
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOG_API_KEY
+
+" \
+-H 'Content-Type: application/json' \
+-X POST \
+-d '{
+  "contents": [{
+    "parts":[{"text": "Explain how AI works"}]
+    }]
+   }'
+
+response:
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Artificial intelligence (AI) doesn't work like a human brain, but rather through a variety of techniques that allow computers to mimic some aspects of human intelligence.  There's no single \"how it works,\" but rather a collection of approaches, broadly categorized as:\n\n**1. Machine Learning (ML):** This is the most prevalent approach.  Instead of being explicitly programmed, ML systems .........\n"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "citationMetadata": {
+        "citationSources": [
+          {
+            "startIndex": 2107,
+            "endIndex": 2261,
+            "uri": "https://morioh.com/a/12ddf5918254/BUILD.md"
+          }
+        ]
+      },
+      "avgLogprobs": -0.15839796799879807
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 4,
+    "candidatesTokenCount": 728,
+    "totalTokenCount": 732
+  },
+  "modelVersion": "gemini-1.5-flash"
+}
+
+
+## end google
+===========================================================================================
+
+mistral
+request:
+curl --location "https://api.mistral.ai/v1/chat/completions" \
+     --header 'Content-Type: application/json' \
+     --header 'Accept: application/json' \
+     --header "Authorization: Bearer $MISTRAL_API_KEY" \
+     --data '{
+    "model": "mistral-large-latest",
+    "messages": [{"role": "user", "content": "Who is the most renowned French painter?"}]
+  }'
+
+embeddings:
+curl --location "https://api.mistral.ai/v1/embeddings" \
+     --header 'Content-Type: application/json' \
+     --header 'Accept: application/json' \
+     --header "Authorization: Bearer $MISTRAL_API_KEY" \
+     --data '{
+    "model": "mistral-embed",
+    "input": ["Embed this sentence.", "As well as this one."]
+  }'
+
+## end mistral
+
+deepseek
+request:
+curl https://api.deepseek.com/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <DeepSeek API Key>" \
+  -d '{
+        "model": "deepseek-chat",
+        "messages": [
+          {"role": "system", "content": "You are a helpful assistant."},
+          {"role": "user", "content": "Hello!"}
+        ],
+        "stream": false
+      }'
+
+response:
+{"id":"82a757e2-dff5-4567-861f-9e378a690ee7","object":"chat.completion","created":1735761977,"model":"deepseek-chat","choices":[{"index":0,"message":{"role":"assistant","content":"Hello! How can I assist you today? 😊"},"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":11,"completion_tokens":11,"total_tokens":22,"prompt_cache_hit_tokens":0,"prompt_cache_miss_tokens":11},"system_fingerprint":"fp_f1afce2943"}
+
+#end deepseek
+
+--------------------------------------------
+
+huggingface
+
+request:
+curl 'https://api-inference.huggingface.co/models/cardiffnlp/twitter-roberta-base-sentiment-latest' \
+-H "Authorization: Bearer <HF_API_KEY>" \
+-H 'Content-Type: application/json' \
+-d '{"inputs": "Today is a great day"}'
+
+
+# huggingface end
+
+SambaNova
+
+Request:
+
+
+Response:
+
+
+
+
+
+
+
+===================================================================================
+========================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+============================================================================================
+==========================================================================================
+
+Ollama:
+
+Request:
+
+curl http://localhost:11434/api/tags
+
+Response:
+
+{
+  "models": [
+    {
+      "name": "codellama:13b",
+      "modified_at": "2023-11-04T14:56:49.277302595-07:00",
+      "size": 7365960935,
+      "digest": "9f438cb9cd581fc025612d27f7c1a6669ff83a8bb0ed86c94fcf4c5440555697",
+      "details": {
+        "format": "gguf",
+        "family": "llama",
+        "families": null,
+        "parameter_size": "13B",
+        "quantization_level": "Q4_0"
+      }
+    },
+    {
+      "name": "llama3:latest",
+      "modified_at": "2023-12-07T09:32:18.757212583-08:00",
+      "size": 3825819519,
+      "digest": "fe938a131f40e6f6d40083c9f0f430a515233eb2edaa6d72eb85c50d64f2300e",
+      "details": {
+        "format": "gguf",
+        "family": "llama",
+        "families": null,
+        "parameter_size": "7B",
+        "quantization_level": "Q4_0"
+      }
+    }
+  ]
+}
+
+# end ollama 
+
+
+Google:
+
+Request:
+
+/Desktop/testing/tuish$ curl https://generativelanguage.googleapis.com/v1beta/models?key=$GOOGLE_API_KEY
+
+Response:
+
+{
+  "models": [
+    {
+      "name": "models/chat-bison-001",
+      "version": "001",
+      "displayName": "PaLM 2 Chat (Legacy)",
+      "description": "A legacy text-only model optimized for chat conversations",
+      "inputTokenLimit": 4096,
+      "outputTokenLimit": 1024,
+      "supportedGenerationMethods": [
+        "generateMessage",
+        "countMessageTokens"
+      ],
+      "temperature": 0.25,
+      "topP": 0.95,
+      "topK": 40
+    },
+    {
+      "name": "models/text-bison-001",
+      "version": "001",
+      "displayName": "PaLM 2 (Legacy)",
+      "description": "A legacy model that understands text and generates text as an output",
+      "inputTokenLimit": 8196,
+      "outputTokenLimit": 1024,
+      "supportedGenerationMethods": [
+        "generateText",
+        "countTextTokens",
+        "createTunedTextModel"
+      ],
+      "temperature": 0.7,
+      "topP": 0.95,
+      "topK": 40
+    },
+    {
+      "name": "models/aqa",
+      "version": "001",
+      "displayName": "Model that performs Attributed Question Answering.",
+      "description": "Model trained to return answers to questions that are grounded in provided sources, along with estimating answerable probability.",
+      "inputTokenLimit": 7168,
+      "outputTokenLimit": 1024,
+      "supportedGenerationMethods": [
+        "generateAnswer"
+      ],
+      "temperature": 0.2,
+      "topP": 1,
+      "topK": 40
+    }
+  ]
+}
+
+#end Google
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
