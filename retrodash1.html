@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Dashboard</title>
+    <style>
+        /* --- Basic Reset & Global Styles --- */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: monospace; /* Classic terminal font */
+            background-color: #000; /* Black background */
+            color: #0f0; /* Green text - classic CRT color */
+            overflow: hidden;  /* Hide scrollbars initially */
+        }
+
+        /* --- Container & Scanlines --- */
+        #container {
+            position: relative; /* For absolute positioning of overlay */
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;  /* Stack elements vertically */
+            overflow: auto;  /* Add scrollbars if content overflows */
+        }
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                rgba(0, 0, 0, 0),
+                rgba(0, 0, 0, 0.3) 2px,
+                rgba(0, 0, 0, 0) 4px
+            );
+            pointer-events: none; /* Make scanlines non-interactive */
+            z-index: 10; /*  Place scanlines on top */
+        }
+        /* CRT Curvature and Flicker */
+        #container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(0,0,0,0) 0%,
+                rgba(0,0,0,0.4) 100%
+            );
+            border-radius: 5%/20%; /* Subtle curvature */
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .flicker {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255,255,255,0.05);
+            animation: flickerAnimation 0.1s infinite alternate;
+            pointer-events: none;
+            z-index: 11; /* Higher z-index than scanlines */
+        }
+
+        @keyframes flickerAnimation {
+            0% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        
+        /* --- Header --- */
+        #header {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 2px solid #0f0;
+            margin-bottom: 15px;
+            font-size: 1.5em;  /* Slightly larger header text */
+        }
+
+        /* --- Main Content Area --- */
+       #main-content {
+           flex-grow: 1; /* Takes up remaining space */
+           padding: 15px;
+           display: flex;
+           flex-wrap: wrap; /* Allows items to wrap on smaller screens */
+           justify-content: space-around; /* Distribute space */
+           align-content: flex-start;  /* Align to the top on multi-line wrap */
+           z-index: 2; /*Ensure content sits on top of the background animation*/
+       }
+
+        /* --- Widget Styles --- */
+        .widget {
+            width: calc(50% - 20px);  /* Two widgets per row on larger screens */
+            min-width: 280px;         /* Minimum width to prevent crushing */
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #0f0;
+            background-color: rgba(0, 32, 0, 0.8);  /* Semi-transparent dark green */
+            box-sizing: border-box;    /* Include padding and border in width */
+            position: relative;  /* For animated borders */
+        }
+        .widget-title {
+            font-size: 1.2em;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed #0f0;
+            padding-bottom: 4px;
+        }
+
+
+        /* --- Input & Button Styles --- */
+       input[type="text"],
+       input[type="number"],
+       select,
+       button {
+           background-color: rgba(0,0,0,0.5);
+           border: 1px solid #0f0;
+           color: #0f0;
+           padding: 5px;
+           margin: 3px 0;
+           font-family: monospace;
+           box-sizing: border-box;  /* Important for consistent sizing */
+           width: 100%; /* Full width on smaller screens */
+           max-width: 250px; /* Prevent overly wide inputs on large screens */
+       }
+
+        button {
+            cursor: pointer;
+            background-color: rgba(0, 64, 0, 0.8);
+            transition: background-color 0.2s ease; /* Smooth transition */
+        }
+
+        button:hover {
+            background-color: rgba(0, 96, 0, 0.9);
+        }
+
+        /* --- Loading Bar ---*/
+        #loading-bar-container {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            width: calc(100% - 20px);  /* Account for padding */
+            height: 20px;
+            background-color: rgba(0, 32, 0, 0.8);
+            border: 1px solid #0f0;
+            z-index: 20; /* Ensure it's above other elements */
+        }
+
+        #loading-bar {
+            height: 100%;
+            width: 0;  /* Start at 0 width */
+            background-color: #0f0;
+            transition: width 0.2s ease;  /* Smooth width transition */
+        }
+
+        /* --- Mobile Styles --- */
+        @media (max-width: 768px) {
+            .widget {
+                width: calc(100% - 20px); /* Full width on small screens */
+            }
+            input[type="text"],
+            input[type="number"],
+            select,
+            button {
+                max-width: none;  /* Allow full width on mobile */
+            }
+        }
+
+        /* --- Glitch Effect (subtle) ---*/
+        .glitch {
+          position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+          content: attr(data-text);
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          opacity: 0.5; /* Adjust for visibility */
+          
+        }
+        .glitch::before {
+          left: 2px;
+          text-shadow: -1px 0 red;
+          animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        }
+        .glitch::after {
+          left: -2px;
+          text-shadow: 1px 0 blue;
+          animation: glitch-anim-2 2s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim-1 {
+          0% { clip-path: inset(86% 0 12% 0); }
+          10% { clip-path: inset(56% 0 40% 0); }
+          20% { clip-path: inset(87% 0 4% 0); }
+          30% { clip-path: inset(86% 0 7% 0); }
+          40% { clip-path: inset(88% 0 1% 0); }
+          50% { clip-path: inset(28% 0 31% 0); }
+          60% { clip-path: inset(42% 0 44% 0); }
+          70% { clip-path: inset(93% 0 6% 0); }
+          80% { clip-path: inset(79% 0 12% 0); }
+          90% { clip-path: inset(33% 0 27% 0); }
+          100% { clip-path: inset(45% 0 50% 0); }
+        }
+
+        @keyframes glitch-anim-2 {
+          0% { clip-path: inset(65% 0 21% 0); }
+          10% { clip-path: inset(39% 0 27% 0); }
+          20% { clip-path: inset(85% 0 1% 0); }
+          30% { clip-path: inset(27% 0 38% 0); }
+          40% { clip-path: inset(88% 0 6% 0); }
+          50% { clip-path: inset(53% 0 31% 0); }
+          60% { clip-path: inset(17% 0 75% 0); }
+          70% { clip-path: inset(56% 0 32% 0); }
+          80% { clip-path: inset(98% 0 1% 0); }
+          90% { clip-path: inset(60% 0 38% 0); }
+          100% { clip-path: inset(82% 0 6% 0); }
+        }
+
+
+       /* --- 3D Cube Animation (using CSS transforms) --- */
+        #cube-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) perspective(800px); /* Perspective is crucial */
+            width: 100px;
+            height: 100px;
+            z-index: 1; /*Behind the content, in front of the background color*/
+        }
+
+        .cube {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d; /*  Enable 3D transforms for children */
+            animation: rotateCube 10s linear infinite;
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px solid #0f0;
+            opacity: 0.7;
+            display:flex; /*Use flex to center the text*/
+            justify-content: center;
+            align-items: center;
+        }
+
+        .front  { transform: rotateY(  0deg) translateZ(50px); }
+        .back   { transform: rotateY(180deg) translateZ(50px); }
+        .right  { transform: rotateY( 90deg) translateZ(50px); }
+        .left   { transform: rotateY(-90deg) translateZ(50px); }
+        .top    { transform: rotateX( 90deg) translateZ(50px); }
+        .bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+
+        @keyframes rotateCube {
+            from { transform: rotateX(0deg) rotateY(0deg); }
+            to { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="scanlines"></div>
+        <div class="flicker"></div>
+        <div id="header" class="glitch" data-text="SYSTEM DASHBOARD">SYSTEM DASHBOARD</div>
+
+        <div id="cube-container">
+            <div class="cube">
+                <div class="cube-face front">FRONT</div>
+                <div class="cube-face back">BACK</div>
+                <div class="cube-face right">RIGHT</div>
+                <div class="cube-face left">LEFT</div>
+                <div class="cube-face top">TOP</div>
+                <div class="cube-face bottom">BOTTOM</div>
+            </div>
+        </div>
+
+        <div id="main-content">
+            <div class="widget">
+                <div class="widget-title">User Stats</div>
+                <div>Users Online: <span id="users-online">12</span></div>
+                <div>New Users: <span id="new-users">3</span></div>
+            </div>
+            <div class="widget">
+                <div class="widget-title">Server Load</div>
+                <div>CPU: <input type="number" id="cpu-load" value="25" min="0" max="100">%</div>
+                <div>RAM: <input type="number" id="ram-usage" value="60" min="0" max="100">%</div>
+            </div>
+            <div class="widget">
+                <div class="widget-title">Network</div>
+                <div>
+                    <label for="bandwidth">Bandwidth:</label>
+                    <select id="bandwidth">
+                        <option value="10">10 Mbps</option>
+                        <option value="100">100 Mbps</option>
+                        <option value="1000">1 Gbps</option>
+                    </select>
+                </div>
+            </div>
+            <div class="widget">
+                <div class="widget-title">Actions</div>
+                <button onclick="rebootServer()">Reboot Server</button>
+                <button onclick="runDiagnostics()">Run Diagnostics</button>
+            </div>
+        </div>
+
+        <div id="loading-bar-container">
+            <div id="loading-bar"></div>
+        </div>
+    </div>
+
+    <script>
+       function rebootServer() {
+           simulateLoading(3000, () => {
+               alert("Server rebooted!");
+           });
+       }
+
+       function runDiagnostics() {
+           simulateLoading(5000, () => {
+               alert("Diagnostics complete.  No errors found.");
+           });
+       }
+
+       function simulateLoading(duration, callback) {
+            const loadingBar = document.getElementById('loading-bar');
+            loadingBar.style.width = '0%'; // Reset
+            let currentWidth = 0;
+            const increment = 10; // Update every 10ms
+            const totalSteps = duration / increment;
+            const widthIncrement = 100 / totalSteps;
+
+            const intervalId = setInterval(() => {
+                currentWidth += widthIncrement;
+                loadingBar.style.width = `${currentWidth}%`;
+
+                if (currentWidth >= 100) {
+                    clearInterval(intervalId);
+                    if (callback) {
+                        callback();
+                    }
+                }
+            }, increment);
+        }
+
+        // Example of updating stats (you'd fetch these from a server)
+        setInterval(() => {
+            document.getElementById('users-online').textContent = Math.floor(Math.random() * 20) + 10;
+            document.getElementById('new-users').textContent = Math.floor(Math.random() * 5);
+        }, 2000);
+    </script>
+</body>
+</html>
