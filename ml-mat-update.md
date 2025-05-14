@@ -50,7 +50,7 @@ Recent breakthroughs in machine learning have led to a variety of models and sys
 
 ---
 
-Below is an infographic designed for all ages to intuitively convey these models and systems:
+
 
 [1]: https://www.microsoft.com/en-us/research/quarterly-brief/jun-2024-brief/articles/mattergen-a-generative-model-for-materials-design/?utm_source=chatgpt.com "MatterGen: A Generative Model for Materials Design - Microsoft"
 [2]: https://arxiv.org/abs/2311.09235?utm_source=chatgpt.com "Scalable Diffusion for Materials Generation"
@@ -69,4 +69,3 @@ Below is an infographic designed for all ages to intuitively convey these models
 [15]: https://www.law.berkeley.edu/wp-content/uploads/2024/02/Google-AI-and-robots-join-forces-to-build-new-materials.pdf?utm_source=chatgpt.com "[PDF] Google AI and robots join forces to build new materials"
 
 
-I’ve created a visually engaging infographic that breaks down each model category into simple, color-coded sections with clear icons and concise descriptions for easy understanding by all ages. Let me know if you'd like any tweaks!
