@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ "$1" = "-" ] || [ -z "$1" ]; then
+  cmark -t man - | mandoc -a -Tutf8
+else
+  cmark -t man "$1" | mandoc -a -Tutf8
+fi
